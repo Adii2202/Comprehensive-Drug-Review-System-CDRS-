@@ -15,6 +15,7 @@ function DrugInformationForm() {
   const [conditionName, setConditionName] = useState([]);
   const [showDrugNames, setShowDrugNames] = useState(true);
   const [sideEffectName, setSideEffectName] = useState(null);
+  const [rating, setRating] = useState(0);
 
   const handleSelectionChange = (event) => {
     setSelection(event.target.value);
@@ -98,7 +99,14 @@ function DrugInformationForm() {
       const df1 = result1.data;
 
       setReviews(df1.reviews);
-      console.log(df1.reviews[0]);
+      const result2 = await axios.get(
+        `http://127.0.0.1:5000/getdrugcat/${drug}`
+      );
+      const df2 = result2.data;
+      const ratings = df2.Rating;
+      setRating(ratings);
+
+      console.log(df2.Rating);
 
       setShowDrugNames(false);
       setSelectedDrugName(drug);
@@ -239,12 +247,18 @@ function DrugInformationForm() {
               <h3>Reviews</h3>
               <div className="reviews-container">
                 {Array.isArray(reviews) &&
-                  reviews.map((review, index) => <p key={index}>{review}</p>)}
+                  reviews.slice(0, 5).map((review, index) => (
+                    <React.Fragment key={index}>
+                      <p>{review}</p>
+                      {index !== 4 && <hr />}{" "}
+                      {/* Add partition if not the last review */}
+                    </React.Fragment>
+                  ))}
               </div>
             </div>
             <div className="card">
               <h3>Rating</h3>
-              <p>Rating: 4.5/5</p>
+              {rating && <p>{rating}</p>}
             </div>
           </div>
         )}
