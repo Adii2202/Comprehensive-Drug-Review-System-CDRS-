@@ -15,7 +15,7 @@ class ResultProvider extends ChangeNotifier {
   double get rating => _rating;
 
   Future<Null> keyfeaturesnsideeffects(String text) async {
-    String api = 'https://api.fda.gov/drug/label.json?search=';
+    String api = 'http://192.168.137.241:5000';
     String url = api + text;
     try {
       var response = await http.get(Uri.parse(url));
@@ -26,60 +26,65 @@ class ResultProvider extends ChangeNotifier {
       _rating = jsonData['results'][0]['rating'];
       notifyListeners();
     } catch (e) {
-      throw e;
+      print(e);
+      rethrow;
     }
     return null;
   }
 }
 
 class ListProvider extends ChangeNotifier {
-  late List<String> _drugs;
-  late List<String> _diseases;
+  List<String> _drugs = [];
+  List<String> _diseases = [];
 
   List<String> get drugs => _drugs;
   List<String> get diseases => _diseases;
 
-  void getDrugs() {
-    _drugs = [
-      'Acetaminophen',
-      'Adderall',
-      'Albuterol',
-      'Alprazolam',
-      'Ambien',
-      'Amoxicillin',
-      'Aspirin',
-    ];
+  Future<Null> getdrugNames() async {
+    print("calling to get drug names");
+    String url = 'http://192.168.137.241:5000/drug-names';
+    try {
+      var res = await http.get(Uri.parse(url));
+      var jsonData = jsonDecode(res.body);
+      _drugs = jsonData['drugNames']
+          .map<String>((e) => e.toString().replaceAll('/', '_'))
+          .toList();
+      print(_drugs);
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+    print("done calling");
+    return null;
   }
 
-  void getDiseases() {
-    _diseases = [
-      'Hair Loss',
-      'Hay Fever',
-      'Headaches',
-      'Heart Disease',
-      'Heartburn',
-      'Hemorrhoids',
-      'Hepatitis',
-      'Hepatitis A',
-      'Hepatitis B',
-      'Hepatitis C',
-      'Hernia',
-      'HIV',
-      'HPV',
-      'Huntington\'s Disease',
-      'Hyperthyroidism',
-      'Hypothyroidism',
-      'Incontinence',
-      'Infertility',
-      'Insomnia',
-      'Irritable Bowel Syndrome',
-      'Kidney Cancer',
-      'Kidney Stones',
-      'Leukemia',
-      'Liver Cancer',
-      'Lung Cancer',
-      'Lupus',
-      'Lyme Disease',
-    ];
+  Future<Null> getdiseaseNames() async {
+    print("calling to get disease names");
+    String url = 'http://192.168.137.241:5000/drug-condition';
+    try {
+      var res = await http.get(Uri.parse(url));
+      var jsonData = jsonDecode(res.body);
+      print(jsonData['drugCondition'].runtimeType);
+      _diseases = jsonData['drugCondition']
+          .map<String>((e) => e.toString().replaceAll('/', '_'))
+          .toList();
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+    print("done calling");
+    return null;
+  }
+
+  Future<Null> getMedFromDisease(String disease) async {
+    String url = 'http://192.168.137.241:5000/drug-names/${disease}';
+    try {
+      var res = await http.get(Uri.parse(url));
+      var jsonData = jsonDecode(res.body);
+      _drugs = jsonData['drugNames'];
+    } catch (e) {
+      rethrow;
+    }
+    return null;
   }
 }

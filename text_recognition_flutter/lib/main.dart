@@ -5,14 +5,14 @@ import 'package:provider/provider.dart';
 
 void main() {
   runApp(
-     MultiProvider(
+    MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => ListProvider()),
         ChangeNotifierProvider(create: (context) => ResultProvider()),
         // Add more providers as needed
       ],
       child: const App(),
-     ),
+    ),
   );
 }
 
@@ -26,9 +26,6 @@ class App extends StatefulWidget {
 class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
-    Provider.of<ListProvider>(context, listen: false).getDrugs();
-    Provider.of<ListProvider>(context, listen: false).getDiseases();
-
     return MaterialApp(
       title: 'DrugRec',
       theme: ThemeData(

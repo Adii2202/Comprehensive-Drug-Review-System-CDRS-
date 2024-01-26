@@ -7,7 +7,7 @@ app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
 # Load CSV file
-df = pd.read_csv("list.csv")
+df = pd.read_csv("combined_dataset.csv")
 
 # Extract drug names from the CSV file
 drug_names = df["drugName"].tolist()
@@ -157,4 +157,4 @@ def get_drug_names_by_condition(condition):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000)
