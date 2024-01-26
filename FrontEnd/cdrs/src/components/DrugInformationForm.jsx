@@ -151,18 +151,30 @@ function DrugInformationForm() {
     }
   };
 
-  const handleFormSubmit = (event) => {
+  const handleFormSubmit = async (event) => {
     event.preventDefault();
     setShowOutput(true);
     setUserInput("");
-    setShowDropdown(false); // Clear the user input after form submission
-    // Fetch drug information
-    // You can implement API calls here to fetch real drug information
+    setShowDropdown(false);
+    if (selection === "drug") {
+      try {
+        const response = await axios.post(
+          "http://127.0.0.1:5000/submit-review",
+          {
+            drugName: selectedDrug,
+            review: document.getElementById("reviewInput").value,
+          }
+        );
+        console.log(response.data);
+      } catch (error) {
+        console.error("Error submitting review:", error);
+      }
+    }
   };
 
   const addReview = (review) => {
     if (review.trim() !== "") {
-      setReviews([...reviews, `Review ${reviews.length + 1}: ${review}`]);
+      setReviews([...reviews, `${reviews.length + 1}: ${review}`]);
     }
   };
 
