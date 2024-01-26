@@ -85,4 +85,4 @@ def get_drug_names_by_condition(condition):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000)

@@ -17,8 +17,8 @@ class _HomeScreenState extends State<HomeScreen> {
   late final FocusNode _searchFocus;
   late final AutoCompleteTextField<String> _autoCompleteTextField;
   String _selected = 'disease';
-  late List<String> _drugList;
-  late List<String> _diseaseList;
+  List<String> _drugList = [];
+  List<String> _diseaseList = [];
 
   @override
   void initState() {
@@ -38,12 +38,28 @@ class _HomeScreenState extends State<HomeScreen> {
         contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       ),
       itemSubmitted: (String item) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ResultScreen(text: item),
-          ),
-        );
+        _selected == 'drug'
+            ? Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ResultScreen(text: item),
+                ),
+              )
+            : {
+                Provider.of<ListProvider>(context, listen: false)
+                    .getMedFromDisease(item),
+                // above provider calls future function which returns null and after success it updates drug list and to get filtered list of drugs from disease so we need to create futurebuilder here to choose from list as follows
+                FutureBuilder(
+                  future: Future.delayed(const Duration(seconds: 1)),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.done) {
+                      return _autoCompleteTextField;
+                    } else {
+                      return const CircularProgressIndicator();
+                    }
+                  },
+                ),
+              };
       },
       itemBuilder: (BuildContext context, String suggestion) {
         return ListTile(
