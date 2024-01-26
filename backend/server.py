@@ -12,7 +12,9 @@ df = pd.read_csv("list.csv")
 # Extract drug names from the CSV file
 drug_names = df["drugName"].tolist()
 drug_condition = df["condition"].tolist()
-
+data = pd.read_csv("combined_dataset.csv")
+drug_review = data["review"].tolist()
+drug_sentiment = data[""]
 
 def gemini(name, feature="keyfeature"):
     print("Gemini called")
@@ -108,6 +110,19 @@ def gemini1(name, feature="sideeffect"):
 #     res = gemini1(drug, "sideeffect")
 #     # print(res)
 #     return jsonify({"sideEffects": res})
+
+
+@app.route("/getdrugreview/<drug>", methods=["GET"])
+def getdrugreview(drug):
+    print("review")
+
+    # Assuming drug names are unique, find the index of the drug in the list
+    drug_index = drug_names.index(drug)
+
+    # Retrieve the reviews for the specified drug
+    reviews = [str(drug_review[drug_index])]  # Convert to string and store as an array
+
+    return jsonify({"reviews": reviews})
 
 
 @app.route("/drug-names", methods=["GET"])

@@ -7,11 +7,7 @@ function DrugInformationForm() {
   const [userInput, setUserInput] = useState("");
   const [selectedDrug, setSelectedDrug] = useState("");
   const [selectedDrugName, setSelectedDrugName] = useState("");
-  const [reviews, setReviews] = useState([
-    "Review 1: Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    "Review 2: Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-    "Review 3: Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-  ]);
+  const [reviews, setReviews] = useState([]);
   const [showOutput, setShowOutput] = useState(false);
   const [drugOptions, setDrugOptions] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -19,6 +15,7 @@ function DrugInformationForm() {
   const [conditionName, setConditionName] = useState([]);
   const [showDrugNames, setShowDrugNames] = useState(true);
   const [sideEffectName, setSideEffectName] = useState(null);
+
   const handleSelectionChange = (event) => {
     setSelection(event.target.value);
     setSelectedDrug("");
@@ -41,7 +38,7 @@ function DrugInformationForm() {
         if (selection === "disease") {
           // console.log(response);
           setConditionName(response.data.drugCondition);
-          // console.log(response.data.drugCondition);
+          console.log(response.data.drugCondition);
         } else if (selection === "drug") {
           setDrugOptions(response.data.drugNames);
         }
@@ -79,21 +76,29 @@ function DrugInformationForm() {
   const handleDrugNameClick = async (drug) => {
     try {
       // Fetch key features for the selected drug
-      const response = await axios.get(
-        `http://127.0.0.1:5000/getKeyfeatures/${drug}`
+      // const response = await axios.get(
+      //   `http://127.0.0.1:5000/getKeyfeatures/${drug}`
+      // );
+      // const data = response.data;
+
+      // setKeyFeatures(data.keyFeatures);
+
+      // // Fetch side effects for the selected drug
+      // const result = await axios.get(
+      //   `http://127.0.0.1:5000/getsideeffect/${drug}`
+      // );
+      // const df = result.data;
+
+      // setSideEffectName(df.sideEffects); // <-- Check this line
+      // console.log(df.sideEffects);
+
+      const result1 = await axios.get(
+        `http://127.0.0.1:5000/getdrugreview/${drug}`
       );
-      const data = response.data;
+      const df1 = result1.data;
 
-      setKeyFeatures(data.keyFeatures);
-
-      // Fetch side effects for the selected drug
-      const result = await axios.get(
-        `http://127.0.0.1:5000/getsideeffect/${drug}`
-      );
-      const df = result.data;
-
-      setSideEffectName(df.sideEffects); // <-- Check this line
-      console.log(df.sideEffects);
+      setReviews(df1.reviews);
+      console.log(df1.reviews[0]);
 
       setShowDrugNames(false);
       setSelectedDrugName(drug);
@@ -233,9 +238,8 @@ function DrugInformationForm() {
             <div className="card reviews-card">
               <h3>Reviews</h3>
               <div className="reviews-container">
-                {reviews.map((review, index) => (
-                  <p key={index}>{review}</p>
-                ))}
+                {Array.isArray(reviews) &&
+                  reviews.map((review, index) => <p key={index}>{review}</p>)}
               </div>
             </div>
             <div className="card">
