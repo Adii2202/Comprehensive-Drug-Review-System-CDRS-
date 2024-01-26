@@ -7,6 +7,8 @@ nltk.download('vader_lexicon')
 
 app = FastAPI()
 
+
+
 origins = ["*"]  # You can specify the allowed origins here
 
 app.add_middleware(
