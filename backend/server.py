@@ -15,6 +15,7 @@ drug_condition = df["condition"].tolist()
 
 
 def gemini(name, feature="keyfeature"):
+    print("Gemini called")
     genai.configure(api_key="AIzaSyB_IMxgMDJacYvnYulmf59Xd1JR3IXzMHw")
     generation_config = {
         "temperature": 0.9,
@@ -50,19 +51,63 @@ def gemini(name, feature="keyfeature"):
 
     prompt_parts = [f"give me {feature} of this {name} medicine in brief"]
     response = model.generate_content(prompt_parts)
-    return jsonify({"res": response.tex})
+    print(f"function call : {response.text}")
+    return response.text
 
 
-@app.route("/getKeyfeatures/<drug>", methods=["GET"])
-def getKeyfeatures(drug):
-    res = gemini(drug)
-    print(res)
-    return res
+def gemini1(name, feature="sideeffect"):
+    print("Gemini called")
+    genai.configure(api_key="AIzaSyB_IMxgMDJacYvnYulmf59Xd1JR3IXzMHw")
+    generation_config = {
+        "temperature": 0.9,
+        "top_p": 1,
+        "top_k": 1,
+        "max_output_tokens": 2048,
+        "stop_sequences": [
+            # "and story ends here.",
+        ],
+    }
+
+    safety_settings = [
+        {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
+        {
+            "category": "HARM_CATEGORY_HATE_SPEECH",
+            "threshold": "BLOCK_MEDIUM_AND_ABOVE",
+        },
+        {
+            "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+            "threshold": "BLOCK_MEDIUM_AND_ABOVE",
+        },
+        {
+            "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+            "threshold": "BLOCK_MEDIUM_AND_ABOVE",
+        },
+    ]
+
+    model = genai.GenerativeModel(
+        model_name="gemini-pro",
+        generation_config=generation_config,
+        safety_settings=safety_settings,
+    )
+
+    prompt_parts = [f"give me {feature} of this {name} medicine in brief"]
+    response = model.generate_content(prompt_parts)
+    print(f"function call : {response.text}")
+    return response.text
 
 
-@app.route("/getDrawback/<drug>", methods=["GET"])
-def getDrawback(drug):
-    return gemini(drug, "drawbacks")
+# @app.route("/getKeyfeatures/<drug>", methods=["GET"])
+# def getKeyfeatures(drug):
+#     res = gemini(drug, "keyfeature")
+#     return jsonify({"keyFeatures": res})
+
+
+# @app.route("/getsideeffect/<drug>", methods=["GET"])
+# def getsideeffect(drug):
+#     print("parent fc")
+#     res = gemini1(drug, "sideeffect")
+#     # print(res)
+#     return jsonify({"sideEffects": res})
 
 
 @app.route("/drug-names", methods=["GET"])
