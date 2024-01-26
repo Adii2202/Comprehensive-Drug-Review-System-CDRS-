@@ -6,6 +6,7 @@ function DrugInformationForm() {
   const [keyFeatures, setKeyFeatures] = useState(null);
   const [userInput, setUserInput] = useState("");
   const [selectedDrug, setSelectedDrug] = useState("");
+  const [selectedDrugName, setSelectedDrugName] = useState("");
   const [reviews, setReviews] = useState([
     "Review 1: Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
     "Review 2: Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
@@ -16,8 +17,12 @@ function DrugInformationForm() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [selection, setSelection] = useState("");
   const [conditionName, setConditionName] = useState([]);
+  const [showDrugNames, setShowDrugNames] = useState(true);
+  const [sideEffectName, setSideEffectName] = useState(null);
   const handleSelectionChange = (event) => {
     setSelection(event.target.value);
+    setSelectedDrug("");
+    setKeyFeatures(null);
   };
 
   // const drugOptions = ["Drug A", "Drug B", "Drug C"];
@@ -34,9 +39,9 @@ function DrugInformationForm() {
         }
         const response = await axios.get(endpoint);
         if (selection === "disease") {
-          console.log(response);
+          // console.log(response);
           setConditionName(response.data.drugCondition);
-          console.log(response.data.drugCondition);
+          // console.log(response.data.drugCondition);
         } else if (selection === "drug") {
           setDrugOptions(response.data.drugNames);
         }
@@ -71,13 +76,28 @@ function DrugInformationForm() {
     }
   };
 
-  const handleButtonClick = async (drug) => {
+  const handleDrugNameClick = async (drug) => {
     try {
-      const response = await fetch(`/getKeyfeatures/${drug}`);
-      const data = await response.json();
-      console.log(data);
-      // Assuming you have a state variable to store key features
+      // Fetch key features for the selected drug
+      const response = await axios.get(
+        `http://127.0.0.1:5000/getKeyfeatures/${drug}`
+      );
+      const data = response.data;
+
       setKeyFeatures(data.keyFeatures);
+
+      // Fetch side effects for the selected drug
+      const result = await axios.get(
+        `http://127.0.0.1:5000/getsideeffect/${drug}`
+      );
+      const df = result.data;
+
+      setSideEffectName(df.sideEffects); // <-- Check this line
+      console.log(df.sideEffects);
+
+      setShowDrugNames(false);
+      setSelectedDrugName(drug);
+      setShowOutput(true);
     } catch (error) {
       console.error("Error fetching key features:", error);
     }
@@ -171,21 +191,23 @@ function DrugInformationForm() {
         </form>
 
         <div>
-          {selection === "disease" && (
+          {showDrugNames && selection === "disease" && (
             <div className="card-2">
               <h3>Selected Condition's Drug Names</h3>
               <div className="condition-drug-names-container">
                 {uniqueDrugOptions.map((option, index) => (
-                  <p key={index}>
-                    <button onClick={() => handleButtonClick(option)}>
-                      {option}
-                    </button>
-                  </p>
+                  <button
+                    style={{
+                      border: "black solid 1px",
+                      padding: "1px",
+                      margin: "2px",
+                    }}
+                    key={index}
+                    onClick={() => handleDrugNameClick(option)}
+                  >
+                    {option}
+                  </button>
                 ))}
-              </div>
-              <h3>Key Features</h3>
-              <div className="key-features-container">
-                {keyFeatures && <p>{keyFeatures}</p>}
               </div>
             </div>
           )}
@@ -199,15 +221,13 @@ function DrugInformationForm() {
             <div className="card">
               <h3>Key features</h3>
               <div className="side-effects-container">
-                Key Features: Lorem ipsum dolor sit amet, consectetur adipiscing
-                elit.
+                {keyFeatures && <p>{keyFeatures}</p>}
               </div>
             </div>
             <div className="card">
               <h3>Side Effects</h3>
               <div className="side-effects-container">
-                Side Effects: Lorem ipsum dolor sit amet, consectetur adipiscing
-                elit.
+                {sideEffectName && <p>{sideEffectName}</p>}
               </div>
             </div>
             <div className="card reviews-card">
