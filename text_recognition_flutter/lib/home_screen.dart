@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:text_recognition_flutter/providers/list_provider.dart';
+import 'package:text_recognition_flutter/result_screen.dart';
 import 'cam_screen.dart';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 
@@ -60,7 +61,66 @@ class _HomeScreenState extends State<HomeScreen> {
         filled: true,
         fillColor: Colors.white,
       ),
-      itemSubmitted: (String item) {},
+      itemSubmitted: (String item) {
+        Provider.of<ListProvider>(context, listen: false)
+            .getMedFromDisease(item)
+            .then(
+              (value) => showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Drug List'),
+                  content: SingleChildScrollView(
+                    child: Column(
+                      children:
+                          Provider.of<ListProvider>(context, listen: false)
+                              .drugs
+                              .map((e) => ListTile(
+                                    title: Text(e),
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => ResultScreen(
+                                            text: e,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ))
+                              .toList(),
+                    ),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Cancel'),
+                    ),
+                  ],
+                ),
+              ),
+            )
+            .catchError(
+              (e) => showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Error'),
+                  content: SingleChildScrollView(
+                    child: Text(e.toString()),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text('OK'),
+                    ),
+                  ],
+                ),
+              ),
+            );
+      },
       itemBuilder: (BuildContext context, String suggestion) {
         return ListTile(
           title: Text(suggestion),

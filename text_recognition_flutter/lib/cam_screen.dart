@@ -1,5 +1,7 @@
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
+import 'package:text_recognition_flutter/providers/list_provider.dart';
 import 'package:text_recognition_flutter/result_screen.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
@@ -184,8 +186,52 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
 
       await navigator.push(
         MaterialPageRoute(
-          builder: (BuildContext context) =>
-              ResultScreen(text: recognizedText.text),
+          builder: (BuildContext context) {
+            Map<String, bool> matchingDrugs = {};
+            final drugList =
+                Provider.of<ListProvider>(context, listen: false).drugs;
+            final textstring = recognizedText.text.toLowerCase().toString();
+
+            for (var drug in drugList) {
+              if (textstring.contains(drug.toLowerCase())) {
+                matchingDrugs[drug] = true;
+              }
+            }
+
+            return AlertDialog(
+              title: const Text('Choose from List'),
+              content: SingleChildScrollView(
+                child: Column(
+                  children: matchingDrugs.keys
+                      .map(
+                        (e) => ListTile(
+                          title: Text(e),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ResultScreen(
+                                  text: e,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    print("list size: ${drugList.length}");
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Cancel'),
+                ),
+              ],
+            );
+          },
         ),
       );
     } catch (e) {

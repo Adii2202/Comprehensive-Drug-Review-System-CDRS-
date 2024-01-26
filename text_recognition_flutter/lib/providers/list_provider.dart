@@ -81,7 +81,7 @@ class ListProvider extends ChangeNotifier {
     try {
       var res = await http.get(Uri.parse(url));
       var jsonData = jsonDecode(res.body);
-      _drugs = jsonData['drugNames'];
+      _drugs = jsonData['drugNames'].map<String>((e) => e.toString()).toList();
     } catch (e) {
       rethrow;
     }
