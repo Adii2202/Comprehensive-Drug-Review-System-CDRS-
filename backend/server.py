@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 import google.generativeai as genai
 from flask_cors import CORS
 import pandas as pd
@@ -16,6 +16,40 @@ data = pd.read_csv("combined_dataset.csv")
 drug_review = data["review"].tolist()
 drug_review_count = df["num_reviews"]
 drug_cat = data["category"].tolist()
+
+
+@app.route("/submit-review", methods=["POST"])
+def submit_review():
+    try:
+        data = request.get_json()
+
+        drug_name = data["drugName"]
+        user_review = data["review"]
+
+        # Find the index of the drug in the DataFrame
+        drug_index = df.index[df["drugName"] == drug_name].tolist()[0]
+
+        # Update the review column for the corresponding drug
+        df.at[drug_index, "review"] = user_review
+
+        # Save the updated DataFrame to the CSV file
+        df.to_csv("combined_dataset.csv", index=False)
+
+        # Fetch the updated reviews for the selected drug
+        drug_indices = [
+            index for index, name in enumerate(drug_names) if name == drug_name
+        ]
+        reviews = [drug_review[index] for index in drug_indices]
+
+        return jsonify(
+            {
+                "success": True,
+                "message": "Review submitted successfully",
+                "reviews": reviews,
+            }
+        )
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)})
 
 
 def gemini(name, feature="keyfeature"):

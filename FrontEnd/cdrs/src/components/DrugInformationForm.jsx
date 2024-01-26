@@ -61,15 +61,49 @@ function DrugInformationForm() {
     setSelectedDrug(option);
     setUserInput(option);
     setShowDropdown(false);
+
     if (selection === "disease") {
       try {
         const response = await axios.get(
           `http://127.0.0.1:5000/drug-names/${option}`
         );
         setDrugOptions(response.data.drugNames);
-        setShowOutput(true); // Display the output section
+        setShowOutput(true);
       } catch (error) {
         console.error("Error fetching drug names:", error);
+      }
+    } else if (selection === "drug") {
+      try {
+        // const keyFeaturesResponse = await axios.get(
+        //   `http://127.0.0.1:5000/getKeyfeatures/${option}`
+        // );
+        // const keyFeaturesData = keyFeaturesResponse.data;
+        // setKeyFeatures(keyFeaturesData.keyFeatures);
+
+        // const sideEffectResponse = await axios.get(
+        //   `http://127.0.0.1:5000/getsideeffect/${option}`
+        // );
+        // const sideEffectData = sideEffectResponse.data;
+        // setSideEffectName(sideEffectData.sideEffects);
+
+        const reviewResponse = await axios.get(
+          `http://127.0.0.1:5000/getdrugreview/${option}`
+        );
+        const reviewData = reviewResponse.data;
+        setReviews(reviewData.reviews);
+
+        const ratingResponse = await axios.get(
+          `http://127.0.0.1:5000/getdrugcat/${option}`
+        );
+        const ratingData = ratingResponse.data;
+        const ratings = ratingData.Rating;
+        setRating(ratings);
+
+        setShowDrugNames(false);
+        setSelectedDrugName(option);
+        setShowOutput(true);
+      } catch (error) {
+        console.error("Error fetching drug information:", error);
       }
     }
   };
@@ -77,6 +111,7 @@ function DrugInformationForm() {
   const handleDrugNameClick = async (drug) => {
     try {
       // Fetch key features for the selected drug
+
       // const response = await axios.get(
       //   `http://127.0.0.1:5000/getKeyfeatures/${drug}`
       // );
@@ -116,18 +151,30 @@ function DrugInformationForm() {
     }
   };
 
-  const handleFormSubmit = (event) => {
+  const handleFormSubmit = async (event) => {
     event.preventDefault();
     setShowOutput(true);
     setUserInput("");
-    setShowDropdown(false); // Clear the user input after form submission
-    // Fetch drug information
-    // You can implement API calls here to fetch real drug information
+    setShowDropdown(false);
+    if (selection === "drug") {
+      try {
+        const response = await axios.post(
+          "http://127.0.0.1:5000/submit-review",
+          {
+            drugName: selectedDrug,
+            review: document.getElementById("reviewInput").value,
+          }
+        );
+        console.log(response.data);
+      } catch (error) {
+        console.error("Error submitting review:", error);
+      }
+    }
   };
 
   const addReview = (review) => {
     if (review.trim() !== "") {
-      setReviews([...reviews, `Review ${reviews.length + 1}: ${review}`]);
+      setReviews([...reviews, `${reviews.length + 1}: ${review}`]);
     }
   };
 
