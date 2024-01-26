@@ -1,0 +1,25 @@
+name: text_recognition_flutter
+description: A sample Flutter project that use text recognition.
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.18.2 <3.0.0"
+
+dependencies:
+  camera: ^0.10.0+4
+  flutter:
+    sdk: flutter
+  google_mlkit_text_recognition: ^0.11.0
+  permission_handler: ^11.2.0
+  autocomplete_textfield: ^2.0.1
+  provider: ^6.1.1
+  http: ^1.2.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+
+flutter:
+  uses-material-design: true
