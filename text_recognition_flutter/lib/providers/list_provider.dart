@@ -46,8 +46,11 @@ class ListProvider extends ChangeNotifier {
     try {
       var res = await http.get(Uri.parse(url));
       var jsonData = jsonDecode(res.body);
-      print(jsonData);
-      _drugs = jsonData['drugNames'];
+      _drugs = jsonData['drugNames']
+          .map<String>(
+              (e) => e.toString().replaceAll(' ', '_').replaceAll('/', '_'))
+          .toList();
+      print(_drugs);
     } catch (e) {
       print(e);
       rethrow;
@@ -62,8 +65,11 @@ class ListProvider extends ChangeNotifier {
     try {
       var res = await http.get(Uri.parse(url));
       var jsonData = jsonDecode(res.body);
-      print(jsonData);
-      _diseases = jsonData['drugCondition'];
+      print(jsonData['drugCondition'].runtimeType);
+      _diseases = jsonData['drugCondition']
+          .map<String>(
+              (e) => e.toString().replaceAll(' ', '_').replaceAll('/', '_'))
+          .toList();
     } catch (e) {
       print(e);
       rethrow;

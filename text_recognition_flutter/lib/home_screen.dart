@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:text_recognition_flutter/providers/list_provider.dart';
-import 'package:text_recognition_flutter/result_screen.dart';
 import 'cam_screen.dart';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 
@@ -16,51 +15,35 @@ class _HomeScreenState extends State<HomeScreen> {
   late final TextEditingController _searchController;
   late final FocusNode _searchFocus;
   late final AutoCompleteTextField<String> _autoCompleteTextField;
-  String _selected = 'disease';
-  List<String> _drugList = [];
-  List<String> _diseaseList = [];
+  String _selected = 'drug';
+
+  late List<String> _drugList;
+  late List<String> _diseaseList;
 
   @override
   void initState() {
     super.initState();
 
-    _diseaseList = Provider.of<ListProvider>(context, listen: false).diseases;
-    _drugList = Provider.of<ListProvider>(context, listen: false).drugs;
     _searchController = TextEditingController();
     _searchFocus = FocusNode();
+
+    _diseaseList = Provider.of<ListProvider>(context).diseases;
+    _drugList = Provider.of<ListProvider>(context).drugs;
 
     _autoCompleteTextField = AutoCompleteTextField<String>(
       key: GlobalKey(),
       controller: _searchController,
       focusNode: _searchFocus,
-      decoration: const InputDecoration(
+      decoration: InputDecoration(
         hintText: 'Type to search drug',
-        contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15.0),
+        ),
+        contentPadding: const EdgeInsets.all(16.0),
+        filled: true,
+        fillColor: Colors.white,
       ),
-      itemSubmitted: (String item) {
-        _selected == 'drug'
-            ? Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ResultScreen(text: item),
-                ),
-              )
-            : {
-                Provider.of<ListProvider>(context, listen: false)
-                    .getMedFromDisease(item),
-                // above provider calls future function which returns null and after success it updates drug list and to get filtered list of drugs from disease so we need to create futurebuilder here to choose from list as follows
-                FutureBuilder(
-                  future: Future.delayed(const Duration(seconds: 1)),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.done) {
-                      return _autoCompleteTextField;
-                    } else {
-                      return const CircularProgressIndicator();
-                    }
-                  },
-                ),
-              };
-      },
+      itemSubmitted: (String item) {},
       itemBuilder: (BuildContext context, String suggestion) {
         return ListTile(
           title: Text(suggestion),
@@ -86,15 +69,16 @@ class _HomeScreenState extends State<HomeScreen> {
         child: SingleChildScrollView(
           scrollDirection: Axis.vertical,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               DropdownButton(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(12),
                 value: _selected,
-                elevation: 26,
+                elevation: 4,
+                icon: const Icon(Icons.arrow_drop_down),
+                iconSize: 24,
+                borderRadius: BorderRadius.circular(15.0),
                 dropdownColor: Colors.grey.shade200,
-                iconSize: 35,
                 items: const [
                   DropdownMenuItem(
                     value: 'drug',
@@ -107,12 +91,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
                 onChanged: (value) {
                   setState(() {
-                    _selected = value!;
+                    _selected = value.toString();
                     _autoCompleteTextField.updateSuggestions(
                         _selected == 'drug' ? _drugList : _diseaseList);
                   });
                 },
               ),
+              const SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.all(20),
                 child: Row(
@@ -130,7 +115,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 60),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
@@ -140,7 +125,19 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   );
                 },
-                child: const Text('Use camera to search drug'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 15,
+                    horizontal: 40,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
+                ),
+                child: const Text(
+                  'Use camera to search drug',
+                  style: TextStyle(fontSize: 18),
+                ),
               ),
             ],
           ),
