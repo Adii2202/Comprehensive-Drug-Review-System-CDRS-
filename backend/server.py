@@ -12,6 +12,10 @@ df = pd.read_csv("combined_dataset.csv")
 # Extract drug names from the CSV file
 drug_names = df["drugName"].tolist()
 drug_condition = df["condition"].tolist()
+data = pd.read_csv("combined_dataset.csv")
+drug_review = data["review"].tolist()
+drug_review_count = df["num_reviews"]
+drug_cat = data["category"].tolist()
 
 
 def gemini(name, feature="keyfeature"):
@@ -108,6 +112,29 @@ def gemini1(name, feature="sideeffect"):
 #     res = gemini1(drug, "sideeffect")
 #     # print(res)
 #     return jsonify({"sideEffects": res})
+
+
+@app.route("/getdrugreview/<drug>", methods=["GET"])
+def getdrugreview(drug):
+    print("review")
+
+    drug_indices = [index for index, name in enumerate(drug_names) if name == drug]
+
+    reviews = [drug_review[index] for index in drug_indices]
+    print(reviews)
+    return jsonify({"reviews": reviews})
+
+
+@app.route("/getdrugcat/<drug>", methods=["GET"])
+def getdrugcat(drug):
+    print("cat")
+
+    drug_indices = [index for index, name in enumerate(drug_names) if name == drug]
+
+    ratings = [float(drug_cat[index]) for index in drug_indices]
+    avg_rating = round(sum(ratings) / len(ratings), 1) if len(ratings) > 0 else 0
+
+    return jsonify({"Rating": avg_rating})
 
 
 @app.route("/drug-names", methods=["GET"])
