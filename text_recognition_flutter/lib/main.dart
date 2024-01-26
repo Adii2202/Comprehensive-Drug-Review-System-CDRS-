@@ -25,15 +25,7 @@ class App extends StatefulWidget {
 
 class _AppState extends State<App> {
   @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    Provider.of<ListProvider>(context, listen: false).getdrugNames();
-    Provider.of<ListProvider>(context, listen: false).getdiseaseNames();
     return MaterialApp(
       title: 'DrugRec',
       theme: ThemeData(

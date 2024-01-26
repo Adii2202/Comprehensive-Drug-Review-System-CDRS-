@@ -47,8 +47,7 @@ class ListProvider extends ChangeNotifier {
       var res = await http.get(Uri.parse(url));
       var jsonData = jsonDecode(res.body);
       _drugs = jsonData['drugNames']
-          .map<String>(
-              (e) => e.toString().replaceAll(' ', '_').replaceAll('/', '_'))
+          .map<String>((e) => e.toString().replaceAll('/', '_'))
           .toList();
       print(_drugs);
     } catch (e) {
@@ -67,8 +66,7 @@ class ListProvider extends ChangeNotifier {
       var jsonData = jsonDecode(res.body);
       print(jsonData['drugCondition'].runtimeType);
       _diseases = jsonData['drugCondition']
-          .map<String>(
-              (e) => e.toString().replaceAll(' ', '_').replaceAll('/', '_'))
+          .map<String>((e) => e.toString().replaceAll('/', '_'))
           .toList();
     } catch (e) {
       print(e);

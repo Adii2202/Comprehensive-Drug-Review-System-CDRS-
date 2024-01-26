@@ -14,21 +14,38 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late final TextEditingController _searchController;
   late final FocusNode _searchFocus;
-  late final AutoCompleteTextField<String> _autoCompleteTextField;
+  AutoCompleteTextField<String>? _autoCompleteTextField;
   String _selected = 'drug';
 
   late List<String> _drugList;
   late List<String> _diseaseList;
 
+  Future<Null> _getDrugNames() async {
+    await Provider.of<ListProvider>(context, listen: false).getdrugNames();
+    _drugList = Provider.of<ListProvider>(context, listen: false).drugs;
+    _diseaseList = Provider.of<ListProvider>(context, listen: false).diseases;
+    _autoCompleteTextField!
+        .updateSuggestions(_selected == 'drug' ? _drugList : _diseaseList);
+  }
+
+  Future<Null> _getDiseaseNames() async {
+    await Provider.of<ListProvider>(context, listen: false).getdiseaseNames();
+    _drugList = Provider.of<ListProvider>(context, listen: false).drugs;
+    _diseaseList = Provider.of<ListProvider>(context, listen: false).diseases;
+    _autoCompleteTextField!
+        .updateSuggestions(_selected == 'drug' ? _drugList : _diseaseList);
+  }
+
   @override
   void initState() {
     super.initState();
-
+    _getDrugNames();
+    _getDiseaseNames();
     _searchController = TextEditingController();
     _searchFocus = FocusNode();
 
-    _diseaseList = Provider.of<ListProvider>(context).diseases;
-    _drugList = Provider.of<ListProvider>(context).drugs;
+    _diseaseList = Provider.of<ListProvider>(context, listen: false).diseases;
+    _drugList = Provider.of<ListProvider>(context, listen: false).drugs;
 
     _autoCompleteTextField = AutoCompleteTextField<String>(
       key: GlobalKey(),
@@ -92,7 +109,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 onChanged: (value) {
                   setState(() {
                     _selected = value.toString();
-                    _autoCompleteTextField.updateSuggestions(
+                    _autoCompleteTextField!.updateSuggestions(
                         _selected == 'drug' ? _drugList : _diseaseList);
                   });
                 },
@@ -103,7 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Row(
                   children: [
                     Expanded(
-                      child: _autoCompleteTextField,
+                      child: _autoCompleteTextField!,
                     ),
                     IconButton(
                       onPressed: () {
