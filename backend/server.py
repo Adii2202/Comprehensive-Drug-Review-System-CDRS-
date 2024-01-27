@@ -134,18 +134,18 @@ def gemini1(name, feature="sideeffect"):
     return response.text
 
 
-# @app.route("/getKeyfeatures/<drug>", methods=["GET"])
-# def getKeyfeatures(drug):
-#     res = gemini(drug, "keyfeature")
-#     return jsonify({"keyFeatures": res})
+@app.route("/getKeyfeatures/<drug>", methods=["GET"])
+def getKeyfeatures(drug):
+    res = gemini(drug, "keyfeature")
+    return jsonify({"keyFeatures": res})
 
 
-# @app.route("/getsideeffect/<drug>", methods=["GET"])
-# def getsideeffect(drug):
-#     print("parent fc")
-#     res = gemini1(drug, "sideeffect")
-#     # print(res)
-#     return jsonify({"sideEffects": res})
+@app.route("/getsideeffect/<drug>", methods=["GET"])
+def getsideeffect(drug):
+    print("parent fc")
+    res = gemini1(drug, "sideeffect")
+    # print(res)
+    return jsonify({"sideEffects": res})
 
 
 @app.route("/getdrugreview/<drug>", methods=["GET"])
@@ -155,6 +155,19 @@ def getdrugreview(drug):
     drug_indices = [index for index, name in enumerate(drug_names) if name == drug]
 
     reviews = [drug_review[index] for index in drug_indices]
+    print(reviews)
+    return jsonify({"reviews": reviews})
+
+@app.route("/getdrugreview2/<drug>", methods=["GET"])
+def getdrugreview2(drug):
+    print("review")
+
+    drug_indices = [index for index, name in enumerate(drug_names) if name == drug]
+
+    reviews = ""
+    for index in drug_indices:
+        if len(reviews) < 5:
+            reviews ="\n"+ reviews + drug_review[index]
     print(reviews)
     return jsonify({"reviews": reviews})
 

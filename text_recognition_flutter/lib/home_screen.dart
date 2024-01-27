@@ -62,64 +62,76 @@ class _HomeScreenState extends State<HomeScreen> {
         fillColor: Colors.white,
       ),
       itemSubmitted: (String item) {
-        Provider.of<ListProvider>(context, listen: false)
-            .getMedFromDisease(item)
-            .then(
-              (value) => showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text('Drug List'),
-                  content: SingleChildScrollView(
-                    child: Column(
-                      children:
-                          Provider.of<ListProvider>(context, listen: false)
-                              .drugs
-                              .map((e) => ListTile(
-                                    title: Text(e),
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => ResultScreen(
-                                            text: e,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ))
-                              .toList(),
+        _selected == 'drug'
+            ? {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ResultScreen(
+                      text: item,
                     ),
                   ),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Text('Cancel'),
+                )
+              }
+            : Provider.of<ListProvider>(context, listen: false)
+                .getMedFromDisease(item)
+                .then(
+                  (value) => showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('Drug List'),
+                      content: SingleChildScrollView(
+                        child: Column(
+                          children:
+                              Provider.of<ListProvider>(context, listen: false)
+                                  .drugs
+                                  .map((e) => ListTile(
+                                        title: Text(e),
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  ResultScreen(
+                                                text: e,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ))
+                                  .toList(),
+                        ),
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text('Cancel'),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-            )
-            .catchError(
-              (e) => showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text('Error'),
-                  content: SingleChildScrollView(
-                    child: Text(e.toString()),
                   ),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Text('OK'),
+                )
+                .catchError(
+                  (e) => showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('Error'),
+                      content: SingleChildScrollView(
+                        child: Text(e.toString()),
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text('OK'),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-            );
+                  ),
+                );
       },
       itemBuilder: (BuildContext context, String suggestion) {
         return ListTile(
