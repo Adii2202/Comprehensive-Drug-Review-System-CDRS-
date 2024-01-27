@@ -181,6 +181,12 @@ function DrugInformationForm() {
 
         setSentimentScore(sentimentScore);
         console.log(sentimentScore);
+        alert(
+          "your score is : " +
+            sentimentScore +
+            " your review is added to the : " +
+            selectedDrug
+        );
         // console.log(selectedDrug);
         // if (sentimentScore > 2) {
         //   await axios.post("http://127.0.0.1:5000/add-review", {
@@ -214,9 +220,9 @@ function DrugInformationForm() {
 
   return (
     <>
-      <div className=" flex-col items-center justify-center flex p-40 ">
+      <div className=" flex-col items-center justify-center flex p-40  ">
         <div className="form-container">
-          <div className="mydict">
+          <div className="mydict justify-center">
             <div className="">
               <h2 className="">Choose an Option</h2>
               <form className="radio-input">
@@ -336,12 +342,12 @@ function DrugInformationForm() {
             </form>
           </div>
         </div>
-        <br/>
-        <br/>
-        <div className="  " >
+        <br />
+        <br />
+        <div className="  ">
           {showDrugNames && selection === "disease" && (
-            <div className="card  ">
-              <h3 >Selected Condition's Drug Names</h3>
+            <div className="card  overflow-auto">
+              <h3>Selected Condition's Drug Names</h3>
               <div className="condition-drug-names-container">
                 {uniqueDrugOptions.map((option, index) => (
                   <button
@@ -368,17 +374,17 @@ function DrugInformationForm() {
 
             <div className="card m-12">
               <h3>Key features</h3>
-              <div className="side-effects-container ">
+              <div className="side-effects-container overflow-auto">
                 {keyFeatures && <p>{keyFeatures}</p>}
               </div>
             </div>
             <div className="card m-12">
               <h3>Side Effects</h3>
-              <div className="side-effects-container">
+              <div className="side-effects-container overflow-auto">
                 {sideEffectName && <p>{sideEffectName}</p>}
               </div>
             </div>
-            <div className="card reviews-card m-12">
+            <div className="card reviews-card m-12 overflow-auto">
               <h3>Reviews</h3>
               <div className="reviews-container">
                 {Array.isArray(reviews) &&
@@ -398,40 +404,38 @@ function DrugInformationForm() {
         )}
 
         {showOutput && (
-          <div className="form-container" >
+          <div className="form-container">
             <h3>Add Review</h3>
             <div className="inputbox">
-            <input
-              
-              type="text"
-              id="reviewInput"
-              required = "required"
-              // placeholder="Add your review..."
-              value={reviewInput}
-              onChange={(e) => setReviewInput(e.target.value)}
-            />
-            <span>Add your review...</span>
-            <i></i>
+              <input
+                type="text"
+                id="reviewInput"
+                required="required"
+                // placeholder="Add your review..."
+                value={reviewInput}
+                onChange={(e) => setReviewInput(e.target.value)}
+              />
+              <span>Add your review...</span>
+              <i></i>
             </div>
             <button onClick={handleAddReview}>
-                <span class="span-mother">
-                  <span>S</span>
-                  <span>u</span>
-                  <span>b</span>
-                  <span>m</span>
-                  <span>i</span>
-                  <span>t</span>
-                </span>
-                <span class="span-mother2">
-                  <span>S</span>
-                  <span>u</span>
-                  <span>b</span>
-                  <span>m</span>
-                  <span>i</span>
-                  <span>t</span>
-                </span>
+              <span class="span-mother">
+                <span>S</span>
+                <span>u</span>
+                <span>b</span>
+                <span>m</span>
+                <span>i</span>
+                <span>t</span>
+              </span>
+              <span class="span-mother2">
+                <span>S</span>
+                <span>u</span>
+                <span>b</span>
+                <span>m</span>
+                <span>i</span>
+                <span>t</span>
+              </span>
             </button>
-
           </div>
         )}
       </div>

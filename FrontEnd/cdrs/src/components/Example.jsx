@@ -13,7 +13,7 @@ const Example = () => {
   const BubbleText = () => {
     return (
       <h2 className="text-5xl font-bold text-black ">
-        {"CDRS".split("").map((child, idx) => (
+        {"Comprehensive Drug Review System".split("").map((child, idx) => (
           <span className={"hoverText"} key={idx}>
             {child}
           </span>

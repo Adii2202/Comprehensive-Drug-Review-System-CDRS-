@@ -16,7 +16,7 @@ drug_condition = df["condition"].tolist()
 data = pd.read_csv("combined_dataset.csv")
 drug_review = data["review"].tolist()
 drug_review_count = df["num_reviews"]
-drug_cat = data["category"].tolist()
+drug_cat = data["average_category"].tolist()
 
 
 # @app.route("/add-review", methods=["POST"])
@@ -127,18 +127,18 @@ def gemini1(name, feature="sideeffect"):
     return response.text
 
 
-# @app.route("/getKeyfeatures/<drug>", methods=["GET"])
-# def getKeyfeatures(drug):
-#     res = gemini(drug, "keyfeature")
-#     return jsonify({"keyFeatures": res})
+@app.route("/getKeyfeatures/<drug>", methods=["GET"])
+def getKeyfeatures(drug):
+    res = gemini(drug, "keyfeature")
+    return jsonify({"keyFeatures": res})
 
 
-# @app.route("/getsideeffect/<drug>", methods=["GET"])
-# def getsideeffect(drug):
-#     print("parent fc")
-#     res = gemini1(drug, "sideeffect")
-#     # print(res)
-#     return jsonify({"sideEffects": res})
+@app.route("/getsideeffect/<drug>", methods=["GET"])
+def getsideeffect(drug):
+    print("parent fc")
+    res = gemini1(drug, "sideeffect")
+    # print(res)
+    return jsonify({"sideEffects": res})
 
 
 @app.route("/getdrugreview/<drug>", methods=["GET"])
