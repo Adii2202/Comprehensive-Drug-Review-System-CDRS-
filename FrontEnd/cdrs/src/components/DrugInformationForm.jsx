@@ -181,24 +181,24 @@ function DrugInformationForm() {
 
         setSentimentScore(sentimentScore);
         console.log(sentimentScore);
-        console.log(selectedDrug);
-        if (sentimentScore > 2) {
-          await axios.post("http://127.0.0.1:5000/add-review", {
-            drug: selectedDrug,
-            review: reviewInput,
-          });
+        // console.log(selectedDrug);
+        // if (sentimentScore > 2) {
+        //   await axios.post("http://127.0.0.1:5000/add-review", {
+        //     drug: selectedDrug,
+        //     review: reviewInput,
+        //   });
 
-          // Fetch the updated reviews for the selected drug
-          const reviewResponse = await axios.get(
-            `http://127.0.0.1:5000/getdrugreview/${selectedDrugName}`
-          );
-          const reviewData = reviewResponse.data;
-          console.log(reviewResponse.data);
-          setReviews(reviewData.reviews);
+        //   // Fetch the updated reviews for the selected drug
+        //   const reviewResponse = await axios.get(
+        //     `http://127.0.0.1:5000/getdrugreview/${selectedDrugName}`
+        //   );
+        //   const reviewData = reviewResponse.data;
+        //   console.log(reviewResponse.data);
+        //   setReviews(reviewData.reviews);
 
-          // Clear the review input
-          setReviewInput("");
-        }
+        //   // Clear the review input
+        //   setReviewInput("");
+        // }
       } else {
         alert(
           "Warning: This review is flagged as potentially fake. Please consider providing a genuine review."
