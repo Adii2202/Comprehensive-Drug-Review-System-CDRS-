@@ -2,10 +2,11 @@ from flask import Flask, jsonify, request
 import google.generativeai as genai
 from flask_cors import CORS
 import pandas as pd
+import requests
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
 
+CORS(app, origins=["http://localhost:5173"])
 # Load CSV file
 df = pd.read_csv("list.csv")
 
@@ -18,38 +19,30 @@ drug_review_count = df["num_reviews"]
 drug_cat = data["category"].tolist()
 
 
-@app.route("/submit-review", methods=["POST"])
-def submit_review():
-    try:
-        data = request.get_json()
+# @app.route("/add-review", methods=["POST"])
+# def add_review():
+#     try:
+#         data = request.json
+#         drug = data.get("drug")
+#         review = data.get("review")
 
-        drug_name = data["drugName"]
-        user_review = data["review"]
+#         # Find the index of the drug in the dataset
+#         row_indices = [i for i, name in enumerate(drug_names) if name == drug]
 
-        # Find the index of the drug in the DataFrame
-        drug_index = df.index[df["drugName"] == drug_name].tolist()[0]
+#         if row_indices:
+#             # Iterate over all matching rows and update the reviews
+#             for row_index in row_indices:
+#                 drug_review[row_index].append(review)
 
-        # Update the review column for the corresponding drug
-        df.at[drug_index, "review"] = user_review
+#             # Save the updated data back to the CSV file
+#             df["review"] = pd.Series(drug_review)
+#             df.to_csv("combined_dataset.csv", index=False)
 
-        # Save the updated DataFrame to the CSV file
-        df.to_csv("combined_dataset.csv", index=False)
-
-        # Fetch the updated reviews for the selected drug
-        drug_indices = [
-            index for index, name in enumerate(drug_names) if name == drug_name
-        ]
-        reviews = [drug_review[index] for index in drug_indices]
-
-        return jsonify(
-            {
-                "success": True,
-                "message": "Review submitted successfully",
-                "reviews": reviews,
-            }
-        )
-    except Exception as e:
-        return jsonify({"success": False, "error": str(e)})
+#             return jsonify({"message": "Review added successfully"})
+#         else:
+#             return jsonify({"message": "Drug not found in the dataset"})
+#     except Exception as e:
+#         return jsonify({"error": str(e)}), 500
 
 
 def gemini(name, feature="keyfeature"):

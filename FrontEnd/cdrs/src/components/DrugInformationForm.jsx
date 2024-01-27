@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import "./DrugInformationForm.css";
+import "./DrugInfo.css";
 
 function DrugInformationForm() {
   const [keyFeatures, setKeyFeatures] = useState(null);
@@ -16,6 +16,9 @@ function DrugInformationForm() {
   const [showDrugNames, setShowDrugNames] = useState(true);
   const [sideEffectName, setSideEffectName] = useState(null);
   const [rating, setRating] = useState(0);
+  const [reviewInput, setReviewInput] = useState("");
+  const [predictionResult, setPredictionResult] = useState("");
+  const [sentimentScore, setSentimentScore] = useState(null);
 
   const handleSelectionChange = (event) => {
     setSelection(event.target.value);
@@ -156,25 +159,53 @@ function DrugInformationForm() {
     setShowOutput(true);
     setUserInput("");
     setShowDropdown(false);
-    if (selection === "drug") {
-      try {
-        const response = await axios.post(
-          "http://127.0.0.1:5000/submit-review",
-          {
-            drugName: selectedDrug,
-            review: document.getElementById("reviewInput").value,
-          }
-        );
-        console.log(response.data);
-      } catch (error) {
-        console.error("Error submitting review:", error);
-      }
-    }
   };
 
-  const addReview = (review) => {
-    if (review.trim() !== "") {
-      setReviews([...reviews, `${reviews.length + 1}: ${review}`]);
+  const handleAddReview = async () => {
+    try {
+      const response = await axios.post("http://127.0.0.1:8000/predict", {
+        review: reviewInput,
+      });
+
+      setPredictionResult(response.data.prediction);
+      console.log(response.data.prediction);
+      if (response.data.prediction === "True") {
+        const sentimentResponse = await axios.post(
+          "http://127.0.0.1:8000/analyze_sentiment",
+          {
+            text: reviewInput,
+          }
+        );
+
+        const sentimentScore = sentimentResponse.data;
+
+        setSentimentScore(sentimentScore);
+        console.log(sentimentScore);
+        // console.log(selectedDrug);
+        // if (sentimentScore > 2) {
+        //   await axios.post("http://127.0.0.1:5000/add-review", {
+        //     drug: selectedDrug,
+        //     review: reviewInput,
+        //   });
+
+        //   // Fetch the updated reviews for the selected drug
+        //   const reviewResponse = await axios.get(
+        //     `http://127.0.0.1:5000/getdrugreview/${selectedDrugName}`
+        //   );
+        //   const reviewData = reviewResponse.data;
+        //   console.log(reviewResponse.data);
+        //   setReviews(reviewData.reviews);
+
+        //   // Clear the review input
+        //   setReviewInput("");
+        // }
+      } else {
+        alert(
+          "Warning: This review is flagged as potentially fake. Please consider providing a genuine review."
+        );
+      }
+    } catch (error) {
+      console.error("Error predicting review:", error);
     }
   };
 
@@ -183,77 +214,134 @@ function DrugInformationForm() {
 
   return (
     <>
-      <div>
-        <h2>Choose an Option</h2>
-        <form>
-          <label>
-            <input
-              type="radio"
-              value="disease"
-              checked={selection === "disease"}
-              onChange={handleSelectionChange}
-            />
-            Disease
-          </label>
-          <br />
-          <label>
-            <input
-              type="radio"
-              value="drug"
-              checked={selection === "drug"}
-              onChange={handleSelectionChange}
-            />
-            Drug Name
-          </label>
-        </form>
-        {selection && (
+      <div className=" flex-col items-center justify-center flex p-40 ">
+        <div className="form-container">
+          <div className="mydict">
+            <div className="">
+              <h2 className="">Choose an Option</h2>
+              <form className="radio-input">
+                {/* <label>
+                  <input
+                    type="radio"
+                    value="disease"
+                    checked={selection === "disease"}
+                    onChange={handleSelectionChange}
+                    id="disease"
+                    name="value-radio"
+                  />
+                  <span>Disease</span>
+                </label>
+                <br />
+                <label>
+                  <input
+                    type="radio"
+                    value="drug"
+                    checked={selection === "drug"}
+                    onChange={handleSelectionChange}
+                    id = "drug"
+                  />
+                  <span className="">Drug Name</span>
+                </label> */}
+                <div className="radio-input">
+                  <label>
+                    <input
+                      type="radio"
+                      id="value-1"
+                      name="value-radio"
+                      value="disease"
+                      checked={selection === "disease"}
+                      onChange={handleSelectionChange}
+                    />
+                    <span>Disease</span>
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      id="value-2"
+                      name="value-radio"
+                      value="drug"
+                      checked={selection === "drug"}
+                      onChange={handleSelectionChange}
+                    />
+                    <span>Drug Name</span>
+                  </label>
+                  <span className="selection"></span>
+                </div>
+              </form>
+              {selection && (
+                <div>
+                  You selected:{" "}
+                  {selection === "disease" ? "Disease" : "Drug Name"}
+                </div>
+              )}
+            </div>
+          </div>
           <div>
-            You selected: {selection === "disease" ? "Disease" : "Drug Name"}
-          </div>
-        )}
-      </div>
-      <div>
-        <h2>Drug Information Form</h2>
-        <form onSubmit={handleFormSubmit}>
-          <label htmlFor="drugName">Enter or Select Drug Name:</label>
-          <div className="input-container">
-            <input
-              type="text"
-              id="drugName"
-              name="drugName"
-              value={userInput}
-              onChange={handleInputChange}
-            />
-            {userInput && showDropdown && (
-              <div className="dropdown">
-                {(selection === "drug"
-                  ? uniqueDrugOptions
-                  : selection === "disease"
-                  ? uniqueCondition
-                  : []
-                )
-                  .filter((option) =>
-                    option.toLowerCase().includes(userInput.toLowerCase())
-                  )
-                  .map((option, index) => (
-                    <div
-                      key={index}
-                      className="dropdown-option"
-                      onClick={() => handleSelectDrug(option)}
-                    >
-                      {option}
-                    </div>
-                  ))}
-              </div>
-            )}
-          </div>
-          <button type="submit">Submit</button>
-        </form>
+            <h2></h2>
+            <form onSubmit={handleFormSubmit}>
+              <label htmlFor="drugName"></label>
+              <div className="inputbox">
+                <input
+                  type="text"
+                  id="drugName"
+                  name="drugName"
+                  value={userInput}
+                  onChange={handleInputChange}
+                  required="required"
+                />
+                <span>Select Drug/Disease:</span>
+                <i></i>
 
-        <div>
+                {userInput && showDropdown && (
+                  <div className="dropdown">
+                    {(selection === "drug"
+                      ? uniqueDrugOptions
+                      : selection === "disease"
+                      ? uniqueCondition
+                      : []
+                    )
+                      .filter((option) =>
+                        option.toLowerCase().includes(userInput.toLowerCase())
+                      )
+                      .map((option, index) => (
+                        <div
+                          key={index}
+                          className="dropdown-option"
+                          onClick={() => handleSelectDrug(option)}
+                        >
+                          {option}
+                        </div>
+                      ))}
+                  </div>
+                )}
+              </div>
+              <button>
+                <span class="span-mother">
+                  <span>S</span>
+                  <span>u</span>
+                  <span>b</span>
+                  <span>m</span>
+                  <span>i</span>
+                  <span>t</span>
+                </span>
+                <span class="span-mother2">
+                  <span>S</span>
+                  <span>u</span>
+                  <span>b</span>
+                  <span>m</span>
+                  <span>i</span>
+                  <span>t</span>
+                </span>
+              </button>
+            </form>
+          </div>
+        </div>
+        <br/>
+        <br/>
+        <div className="  " >
           {showDrugNames && selection === "disease" && (
-            <div className="card-2">
-              <h3>Selected Condition's Drug Names</h3>
+            <div className="card  ">
+              <h3 >Selected Condition's Drug Names</h3>
               <div className="condition-drug-names-container">
                 {uniqueDrugOptions.map((option, index) => (
                   <button
@@ -274,36 +362,35 @@ function DrugInformationForm() {
         </div>
 
         {showOutput && (
-          <div className="output-container">
+          <div className="output-container flex m-12 ">
             {/* Display drug information cards */}
             {/* ... */}
 
-            <div className="card">
+            <div className="card m-12">
               <h3>Key features</h3>
-              <div className="side-effects-container">
+              <div className="side-effects-container ">
                 {keyFeatures && <p>{keyFeatures}</p>}
               </div>
             </div>
-            <div className="card">
+            <div className="card m-12">
               <h3>Side Effects</h3>
               <div className="side-effects-container">
                 {sideEffectName && <p>{sideEffectName}</p>}
               </div>
             </div>
-            <div className="card reviews-card">
+            <div className="card reviews-card m-12">
               <h3>Reviews</h3>
               <div className="reviews-container">
                 {Array.isArray(reviews) &&
-                  reviews.slice(0, 5).map((review, index) => (
+                  reviews.map((review, index) => (
                     <React.Fragment key={index}>
                       <p>{review}</p>
-                      {index !== 4 && <hr />}{" "}
                       {/* Add partition if not the last review */}
                     </React.Fragment>
                   ))}
               </div>
             </div>
-            <div className="card">
+            <div className="card m-12">
               <h3>Rating</h3>
               {rating && <p>{rating}</p>}
             </div>
@@ -311,20 +398,40 @@ function DrugInformationForm() {
         )}
 
         {showOutput && (
-          <div>
+          <div className="form-container" >
             <h3>Add Review</h3>
+            <div className="inputbox">
             <input
+              
               type="text"
               id="reviewInput"
-              placeholder="Add your review..."
+              required = "required"
+              // placeholder="Add your review..."
+              value={reviewInput}
+              onChange={(e) => setReviewInput(e.target.value)}
             />
-            <button
-              onClick={() =>
-                addReview(document.getElementById("reviewInput").value)
-              }
-            >
-              Submit Review
+            <span>Add your review...</span>
+            <i></i>
+            </div>
+            <button onClick={handleAddReview}>
+                <span class="span-mother">
+                  <span>S</span>
+                  <span>u</span>
+                  <span>b</span>
+                  <span>m</span>
+                  <span>i</span>
+                  <span>t</span>
+                </span>
+                <span class="span-mother2">
+                  <span>S</span>
+                  <span>u</span>
+                  <span>b</span>
+                  <span>m</span>
+                  <span>i</span>
+                  <span>t</span>
+                </span>
             </button>
+
           </div>
         )}
       </div>
