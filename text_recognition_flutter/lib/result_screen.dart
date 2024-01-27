@@ -13,14 +13,20 @@ class ResultScreen extends StatefulWidget {
 
 class _ResultScreenState extends State<ResultScreen> {
   @override
+  void didUpdateWidget(covariant ResultScreen oldWidget) {
+    // TODO: implement didUpdateWidget
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
   void initState() {
-    // TODO: implement initState
-    super.initState();
     Provider.of<ResultProvider>(context, listen: false).getdrugcat(widget.text);
     Provider.of<ResultProvider>(context, listen: false)
         .getsideeffects(widget.text);
     Provider.of<ResultProvider>(context, listen: false)
         .keyfeaturesnsideeffects(widget.text);
+    // TODO: implement initState
+    super.initState();
   }
 
   @override
