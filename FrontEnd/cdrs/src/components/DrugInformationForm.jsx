@@ -214,7 +214,7 @@ function DrugInformationForm() {
 
   return (
     <>
-      <div className="h-screen flex items-center justify-center flex-column">
+      <div className=" flex-col items-center justify-center flex p-40 ">
         <div className="form-container">
           <div className="mydict">
             <div className="">
@@ -316,7 +316,7 @@ function DrugInformationForm() {
                 )}
               </div>
               <button>
-                <span className="span-mother">
+                <span class="span-mother">
                   <span>S</span>
                   <span>u</span>
                   <span>b</span>
@@ -336,10 +336,12 @@ function DrugInformationForm() {
             </form>
           </div>
         </div>
-        <div>
+        <br/>
+        <br/>
+        <div className="  " >
           {showDrugNames && selection === "disease" && (
-            <div className="card-2">
-              <h3>Selected Condition's Drug Names</h3>
+            <div className="card-2  ">
+              <h3 >Selected Condition's Drug Names</h3>
               <div className="condition-drug-names-container">
                 {uniqueDrugOptions.map((option, index) => (
                   <button
@@ -360,23 +362,23 @@ function DrugInformationForm() {
         </div>
 
         {showOutput && (
-          <div className="output-container">
+          <div className="output-container flex m-12 ">
             {/* Display drug information cards */}
             {/* ... */}
 
-            <div className="card">
+            <div className="card m-12">
               <h3>Key features</h3>
-              <div className="side-effects-container">
+              <div className="side-effects-container ">
                 {keyFeatures && <p>{keyFeatures}</p>}
               </div>
             </div>
-            <div className="card">
+            <div className="card m-12">
               <h3>Side Effects</h3>
               <div className="side-effects-container">
                 {sideEffectName && <p>{sideEffectName}</p>}
               </div>
             </div>
-            <div className="card reviews-card">
+            <div className="card reviews-card m-12">
               <h3>Reviews</h3>
               <div className="reviews-container">
                 {Array.isArray(reviews) &&
@@ -388,7 +390,7 @@ function DrugInformationForm() {
                   ))}
               </div>
             </div>
-            <div className="card">
+            <div className="card m-12">
               <h3>Rating</h3>
               {rating && <p>{rating}</p>}
             </div>
@@ -396,16 +398,40 @@ function DrugInformationForm() {
         )}
 
         {showOutput && (
-          <div>
+          <div className="form-container" >
             <h3>Add Review</h3>
+            <div className="inputbox">
             <input
+              
               type="text"
               id="reviewInput"
-              placeholder="Add your review..."
+              required = "required"
+              // placeholder="Add your review..."
               value={reviewInput}
               onChange={(e) => setReviewInput(e.target.value)}
             />
-            <button onClick={handleAddReview}>Submit Review</button>
+            <span>Add your review...</span>
+            <i></i>
+            </div>
+            <button onClick={handleAddReview}>
+                <span class="span-mother">
+                  <span>S</span>
+                  <span>u</span>
+                  <span>b</span>
+                  <span>m</span>
+                  <span>i</span>
+                  <span>t</span>
+                </span>
+                <span class="span-mother2">
+                  <span>S</span>
+                  <span>u</span>
+                  <span>b</span>
+                  <span>m</span>
+                  <span>i</span>
+                  <span>t</span>
+                </span>
+            </button>
+
           </div>
         )}
       </div>
