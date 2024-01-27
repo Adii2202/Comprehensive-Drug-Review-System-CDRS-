@@ -151,6 +151,19 @@ def getdrugreview(drug):
     print(reviews)
     return jsonify({"reviews": reviews})
 
+@app.route("/getdrugreview2/<drug>", methods=["GET"])
+def getdrugreview2(drug):
+    print("review")
+
+    drug_indices = [index for index, name in enumerate(drug_names) if name == drug]
+
+    reviews = ""
+    for index in drug_indices:
+        if len(reviews) < 5:
+            reviews ="\n"+ reviews + drug_review[index]
+    print(reviews)
+    return jsonify({"reviews": reviews})
+
 
 @app.route("/getdrugcat/<drug>", methods=["GET"])
 def getdrugcat(drug):

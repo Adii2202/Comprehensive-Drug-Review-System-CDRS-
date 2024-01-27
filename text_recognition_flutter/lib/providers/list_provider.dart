@@ -4,10 +4,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 class ResultProvider extends ChangeNotifier {
-  late String _keyfeatures;
-  late String _sideeffects;
-  late String _reviews;
-  late double _rating;
+  String _keyfeatures = '';
+  String _sideeffects = '';
+  String _reviews = '';
+  double _rating = 0.0;
 
   String get keyfeatures => _keyfeatures;
   String get sideeffects => _sideeffects;
@@ -15,15 +15,59 @@ class ResultProvider extends ChangeNotifier {
   double get rating => _rating;
 
   Future<Null> keyfeaturesnsideeffects(String text) async {
-    String api = 'http://192.168.137.241:5000';
+    String api = 'http://192.168.137.241:5000/getdrugreview/';
     String url = api + text;
     try {
       var response = await http.get(Uri.parse(url));
       var jsonData = jsonDecode(response.body);
-      _keyfeatures = jsonData['results'][0]['description'];
-      _sideeffects = jsonData['results'][0]['adverse_reactions'];
-      _reviews = jsonData['results'][0]['openfda']['manufacturer_name'][0];
-      _rating = jsonData['results'][0]['rating'];
+      _reviews =
+          jsonData["reviews"].toString();
+      print(_reviews);
+      notifyListeners();
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+    return null;
+  }
+
+  Future<Null> getdrugcat(String text) async {
+    String api = 'http://192.168.137.241:5000/getdrugcat/';
+    String url = api + text;
+    try {
+      var response = await http.get(Uri.parse(url));
+      var jsonData = jsonDecode(response.body);
+      _rating = jsonData['Rating'].toDouble();
+      notifyListeners();
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+    return null;
+  }
+
+  Future<Null> getsideeffects(String text) async {
+    String api = 'http://192.168.137.241:5000/getsideeffect/';
+    String url = api + text;
+    try {
+      var response = await http.get(Uri.parse(url));
+      var jsonData = jsonDecode(response.body);
+      _sideeffects = jsonData['sideEffects'].toString();
+      notifyListeners();
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+    return null;
+  }
+
+  Future<Null> getkeyfeatures(String text) async {
+    String api = 'http://192.168.137.241:5000/getKeyfeatures/';
+    String url = api + text;
+    try {
+      var response = await http.get(Uri.parse(url));
+      var jsonData = jsonDecode(response.body);
+      _keyfeatures = jsonData['keyFeatures'];
       notifyListeners();
     } catch (e) {
       print(e);
@@ -81,7 +125,7 @@ class ListProvider extends ChangeNotifier {
     try {
       var res = await http.get(Uri.parse(url));
       var jsonData = jsonDecode(res.body);
-      _drugs = jsonData['drugNames'];
+      _drugs = jsonData['drugNames'].map<String>((e) => e.toString()).toList();
     } catch (e) {
       rethrow;
     }
