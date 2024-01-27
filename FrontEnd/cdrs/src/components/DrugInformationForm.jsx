@@ -16,6 +16,9 @@ function DrugInformationForm() {
   const [showDrugNames, setShowDrugNames] = useState(true);
   const [sideEffectName, setSideEffectName] = useState(null);
   const [rating, setRating] = useState(0);
+  const [reviewInput, setReviewInput] = useState("");
+  const [predictionResult, setPredictionResult] = useState("");
+  const [sentimentScore, setSentimentScore] = useState(null);
 
   const handleSelectionChange = (event) => {
     setSelection(event.target.value);
@@ -156,25 +159,35 @@ function DrugInformationForm() {
     setShowOutput(true);
     setUserInput("");
     setShowDropdown(false);
-    if (selection === "drug") {
-      try {
-        const response = await axios.post(
-          "http://127.0.0.1:5000/submit-review",
-          {
-            drugName: selectedDrug,
-            review: document.getElementById("reviewInput").value,
-          }
-        );
-        console.log(response.data);
-      } catch (error) {
-        console.error("Error submitting review:", error);
-      }
-    }
   };
 
-  const addReview = (review) => {
-    if (review.trim() !== "") {
-      setReviews([...reviews, `${reviews.length + 1}: ${review}`]);
+  const handleAddReview = async () => {
+    try {
+      const response = await axios.post("http://127.0.0.1:8000/predict", {
+        review: reviewInput,
+      });
+
+      setPredictionResult(response.data.prediction);
+      console.log(response.data.prediction);
+      if (response.data.prediction === "True") {
+        const sentimentResponse = await axios.post(
+          "http://127.0.0.1:8000/analyze_sentiment",
+          {
+            text: reviewInput,
+          }
+        );
+
+        const sentimentScore = sentimentResponse.data;
+
+        setSentimentScore(sentimentScore);
+        console.log(sentimentScore);
+      } else {
+        alert(
+          "Warning: This review is flagged as potentially fake. Please consider providing a genuine review."
+        );
+      }
+    } catch (error) {
+      console.error("Error predicting review:", error);
     }
   };
 
@@ -294,10 +307,9 @@ function DrugInformationForm() {
               <h3>Reviews</h3>
               <div className="reviews-container">
                 {Array.isArray(reviews) &&
-                  reviews.slice(0, 5).map((review, index) => (
+                  reviews.map((review, index) => (
                     <React.Fragment key={index}>
                       <p>{review}</p>
-                      {index !== 4 && <hr />}{" "}
                       {/* Add partition if not the last review */}
                     </React.Fragment>
                   ))}
@@ -317,14 +329,10 @@ function DrugInformationForm() {
               type="text"
               id="reviewInput"
               placeholder="Add your review..."
+              value={reviewInput}
+              onChange={(e) => setReviewInput(e.target.value)}
             />
-            <button
-              onClick={() =>
-                addReview(document.getElementById("reviewInput").value)
-              }
-            >
-              Submit Review
-            </button>
+            <button onClick={handleAddReview}>Submit Review</button>
           </div>
         )}
       </div>
