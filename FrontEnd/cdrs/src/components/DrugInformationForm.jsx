@@ -322,7 +322,7 @@ function DrugInformationForm() {
         <br/>
         <div className="  " >
           {showDrugNames && selection === "disease" && (
-            <div className="card-2  ">
+            <div className="card  ">
               <h3 >Selected Condition's Drug Names</h3>
               <div className="condition-drug-names-container">
                 {uniqueDrugOptions.map((option, index) => (
