@@ -4,7 +4,7 @@ import "./bubblemodules.css";
 
 const Example = () => {
     return (
-      <div className="grid h-screen place-content-center bg-black">
+      <div className="">
         <BubbleText />
       </div>
     );
@@ -12,8 +12,8 @@ const Example = () => {
   
   const BubbleText = () => {
     return (
-      <h2 className="text-center text-5xl font-thin text-indigo-300">
-        {"Bubbbbbbbble text".split("").map((child, idx) => (
+      <h2 className="text-5xl font-bold text-black ">
+        {"CDRS".split("").map((child, idx) => (
           <span className={"hoverText"} key={idx}>
             {child}
           </span>
