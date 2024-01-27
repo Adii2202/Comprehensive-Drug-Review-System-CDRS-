@@ -181,6 +181,24 @@ function DrugInformationForm() {
 
         setSentimentScore(sentimentScore);
         console.log(sentimentScore);
+        console.log(selectedDrug);
+        if (sentimentScore > 2) {
+          await axios.post("http://127.0.0.1:5000/add-review", {
+            drug: selectedDrug,
+            review: reviewInput,
+          });
+
+          // Fetch the updated reviews for the selected drug
+          const reviewResponse = await axios.get(
+            `http://127.0.0.1:5000/getdrugreview/${selectedDrugName}`
+          );
+          const reviewData = reviewResponse.data;
+          console.log(reviewResponse.data);
+          setReviews(reviewData.reviews);
+
+          // Clear the review input
+          setReviewInput("");
+        }
       } else {
         alert(
           "Warning: This review is flagged as potentially fake. Please consider providing a genuine review."
@@ -199,7 +217,7 @@ function DrugInformationForm() {
       <div className="h-screen flex items-center justify-center flex-column">
         <div className="form-container">
           <div className="mydict">
-            <div className="" >
+            <div className="">
               <h2 className="">Choose an Option</h2>
               <form className="radio-input">
                 {/* <label>
@@ -269,10 +287,10 @@ function DrugInformationForm() {
                   name="drugName"
                   value={userInput}
                   onChange={handleInputChange}
-                  required = "required"
+                  required="required"
                 />
-                  <span>Select Drug/Disease:</span>
-                    <i></i>
+                <span>Select Drug/Disease:</span>
+                <i></i>
 
                 {userInput && showDropdown && (
                   <div className="dropdown">
@@ -298,23 +316,23 @@ function DrugInformationForm() {
                 )}
               </div>
               <button>
-                  <span class="span-mother">
-                    <span>S</span>
-                    <span>u</span>
-                    <span>b</span>
-                    <span>m</span>
-                    <span>i</span>
-                    <span>t</span>
-                  </span>
-                  <span class="span-mother2">
-                    <span>S</span>
-                    <span>u</span>
-                    <span>b</span>
-                    <span>m</span>
-                    <span>i</span>
-                    <span>t</span>
-                  </span>
-                </button>
+                <span className="span-mother">
+                  <span>S</span>
+                  <span>u</span>
+                  <span>b</span>
+                  <span>m</span>
+                  <span>i</span>
+                  <span>t</span>
+                </span>
+                <span class="span-mother2">
+                  <span>S</span>
+                  <span>u</span>
+                  <span>b</span>
+                  <span>m</span>
+                  <span>i</span>
+                  <span>t</span>
+                </span>
+              </button>
             </form>
           </div>
         </div>
@@ -340,7 +358,7 @@ function DrugInformationForm() {
             </div>
           )}
         </div>
-        
+
         {showOutput && (
           <div className="output-container">
             {/* Display drug information cards */}
